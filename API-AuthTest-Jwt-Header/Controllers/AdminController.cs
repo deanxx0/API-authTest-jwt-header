@@ -9,7 +9,7 @@ namespace API_AuthTest_Jwt_Header.Controllers
 {
     [Route("")]
     [ApiController]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = "AdminOnly")] // controller 별 권한 검증 정책 할당, startup에 등록해둔 정책 이름 사용
     public class AdminController : ControllerBase
     {
         public AdminController()

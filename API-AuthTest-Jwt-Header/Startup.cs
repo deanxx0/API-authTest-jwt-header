@@ -29,14 +29,15 @@ namespace API_AuthTest_Jwt_Header
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-
+            // jwt 인증에 사용될 secret key
             var key = Encoding.ASCII.GetBytes("aaaaaaaaaaaaaaaaaaaa");
-
+            // 인증 스킴 설정
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
+            // 인증에 사용될 jwtBearer 설정
             .AddJwtBearer(x =>
             {
                 x.Events = new JwtBearerEvents
@@ -56,10 +57,14 @@ namespace API_AuthTest_Jwt_Header
                     ValidateAudience = false
                 };
             });
-
+            // 권한 검증 정책 설정
             services.AddAuthorization(options =>
             {
+                // 여러 정책 추가 가능
+                // 여기에 등록한 정책 이름을 각 컨트롤러에 적용
+                // 토큰을 파싱했을때 토큰에 ("Member", "true") claim이 있어야 한다는 정책
                 options.AddPolicy("MemberOnly", policy => policy.RequireClaim("Member", "true"));
+                // 토큰에 ("Member", "true") claim도 있고 ("Admin", "true") claim도 있어야 한다는 정책
                 options.AddPolicy("AdminOnly", policy => policy
                 .RequireClaim("Member", "true")
                 .RequireClaim("Admin", "true")
@@ -85,6 +90,7 @@ namespace API_AuthTest_Jwt_Header
 
             app.UseRouting();
 
+            // cors 설정
             app.UseCors(builder => builder
                 .AllowAnyHeader()
                 .AllowAnyMethod()
